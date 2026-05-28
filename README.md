@@ -1,120 +1,113 @@
 # Tutor AI
 
-AI-ассистент для репетиторов: генерация ДЗ, ведение учеников, расписание и платежи.
+AI-ассистент репетиторов: Telegram-бот + Mini App для сборки домашних заданий из проверенного банка задач (ЕГЭ/ОГЭ).
 
-## Стек
+> Стек: Python 3.12 · aiogram 3 · FastAPI · SQLAlchemy 2.0 (async) · Alembic · PostgreSQL 16 + pgvector · Redis · YandexGPT · ЮKassa.
 
-- Next.js 14 (App Router) + TypeScript
-- Tailwind CSS + shadcn/ui
-- Prisma 5 + PostgreSQL 16 + pgvector
-- Clerk (авторизация + webhooks)
-- pnpm
+## Структура
 
-## Требования
-
-- Node.js 20+
-- pnpm 9+
-- Docker Desktop
+```
+core/        # Бизнес-логика, БД, сервисы
+  config.py
+  db/        # модели, движок, сидинг тегов
+bot/         # Telegram-бот (aiogram)
+api/         # FastAPI для Mini App и вебхуков
+parser/      # Парсинг PDF в задачи (позже)
+migrations/  # Alembic
+pdf_templates/
+tests/
+```
 
 ## Быстрый старт
 
-1. Установите зависимости:
+### 1. Зависимости
 
-   ```bash
-   pnpm install
-   ```
+Рекомендуется [uv](https://docs.astral.sh/uv/) — быстрый и без сюрпризов.
 
-2. Скопируйте переменные окружения:
+```bash
+# установить uv (один раз)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Заполните Clerk-ключи из [dashboard.clerk.com](https://dashboard.clerk.com).
-   `DATABASE_URL` уже настроен на локальный Docker-Postgres.
-
-3. Поднимите Postgres:
-
-   ```bash
-   docker compose up -d
-   ```
-
-4. Примените миграции и засейте теги:
-
-   ```bash
-   pnpm db:migrate   # создаст схему в БД
-   pnpm db:seed      # наполнит TaskTag деревом тегов
-   ```
-
-5. Запустите дев-сервер:
-
-   ```bash
-   pnpm dev
-   ```
-
-   Откройте [http://localhost:3000](http://localhost:3000).
-
-## Структура каталогов
-
-```
-.
-├── docker-compose.yml         # Postgres 16 + pgvector
-├── prisma/
-│   ├── schema.prisma          # схема БД
-│   ├── seed.ts                # сидинг тегов
-│   ├── tags_math_ege.json     # кодификатор ФИПИ (математика, профиль)
-│   └── migrations/
-└── src/
-    ├── app/
-    │   ├── page.tsx           # лендинг
-    │   ├── sign-in/           # Clerk
-    │   ├── sign-up/
-    │   ├── dashboard/         # защищённая зона
-    │   │   ├── homeworks/
-    │   │   ├── students/
-    │   │   ├── schedule/
-    │   │   ├── payments/
-    │   │   └── settings/
-    │   └── api/webhooks/clerk/ # синхронизация User
-    ├── components/
-    │   ├── ui/                # shadcn/ui
-    │   ├── sidebar.tsx
-    │   ├── mobile-sidebar.tsx
-    │   ├── theme-toggle.tsx
-    │   └── providers/
-    ├── lib/
-    │   ├── db.ts              # Prisma singleton
-    │   └── utils.ts
-    ├── hooks/
-    └── middleware.ts          # защита /dashboard/*
+# создать venv и установить зависимости
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
 ```
 
-## Полезные команды
+Альтернатива — обычный `pip`:
 
-| Команда             | Что делает                              |
-| ------------------- | --------------------------------------- |
-| `pnpm dev`          | dev-сервер Next.js                      |
-| `pnpm build`        | production-сборка                       |
-| `pnpm lint`         | ESLint                                  |
-| `pnpm format`       | Prettier (write)                        |
-| `pnpm db:migrate`   | `prisma migrate dev`                    |
-| `pnpm db:seed`      | сидинг тегов                            |
-| `pnpm db:studio`    | Prisma Studio                           |
-| `pnpm db:generate`  | сгенерировать Prisma Client             |
-
-## Clerk webhook (синхронизация User)
-
-В Clerk Dashboard → Webhooks → создать endpoint:
-
-```
-https://<ваш-домен>/api/webhooks/clerk
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
 ```
 
-Подписки: `user.created`, `user.updated`, `user.deleted`.
-Полученный `Signing Secret` положите в `.env.local` как `CLERK_WEBHOOK_SECRET`.
+### 2. Env
 
-Локально вебхук можно проксировать через `ngrok` или Clerk-локальный туннель.
+```bash
+cp .env.example .env
+# заполнить TELEGRAM_BOT_TOKEN, YC_*, YOOKASSA_* по мере появления
+```
 
-## Темы
+### 3. Postgres + Redis
 
-Светлая/тёмная/системная — переключение через кнопку в шапке (next-themes + shadcn/ui).
+```bash
+docker compose up -d
+docker compose ps   # postgres healthy, redis healthy
+```
+
+### 4. Миграции
+
+```bash
+alembic upgrade head
+```
+
+Создать новую миграцию после изменений в `core/db/models.py`:
+
+```bash
+alembic revision --autogenerate -m "add something"
+alembic upgrade head
+```
+
+### 5. Сидинг тегов
+
+```bash
+python -m core.db.seed
+# или один файл:
+python -m core.db.seed tags_math_ege.json
+```
+
+В БД появится дерево тегов для математики (профильная), ЕГЭ. Аналогичные JSON-файлы для других предметов/уровней кладите в `core/db/tags/`.
+
+### 6. Запуск
+
+```bash
+# бот (long polling)
+python -m bot.main
+
+# API
+uvicorn api.main:app --reload --port 8000
+# health-check:
+curl http://localhost:8000/health
+```
+
+### Deep link для реферала
+
+Формат: `https://t.me/<TELEGRAM_BOT_USERNAME>?start=ref_<USER_ID>`. При первом `/start` бот проставит `referred_by_id` у нового пользователя.
+
+## Разработка
+
+```bash
+ruff check .
+black .
+pytest
+```
+
+## Критерии готовности спринта 1
+
+- [x] `docker compose up -d` поднимает Postgres (pgvector) + Redis.
+- [x] Бот отвечает на `/start`, создаёт `User` в БД (через `AuthMiddleware`).
+- [x] Deep link с рефералом корректно заполняет `referred_by_id`.
+- [x] В БД полное дерево тегов математики ЕГЭ после `python -m core.db.seed`.
+- [x] `GET /health` отвечает `{"status": "ok"}` при поднятой БД.
+- [x] Код в Git, README с инструкцией.

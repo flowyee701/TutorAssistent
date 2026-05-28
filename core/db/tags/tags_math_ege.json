@@ -1,0 +1,200 @@
+{
+  "_comment": "Иерархия тегов для математики ЕГЭ профильной. Основа — кодификатор ФИПИ. Используется в prisma/seed.ts. Для других предметов и уровней — аналогичные файлы.",
+  "subject": "MATH_PROFILE",
+  "examType": "EGE",
+  "tree": {
+    "code": "math_profile_ege",
+    "name": "Математика (профильная), ЕГЭ",
+    "children": [
+      {
+        "code": "algebra",
+        "name": "Алгебра",
+        "children": [
+          {
+            "code": "expressions",
+            "name": "Преобразование выражений",
+            "children": [
+              {"code": "rational", "name": "Рациональные выражения"},
+              {"code": "irrational", "name": "Иррациональные выражения"},
+              {"code": "exponential", "name": "Показательные выражения"},
+              {"code": "logarithmic", "name": "Логарифмические выражения"},
+              {"code": "trigonometric", "name": "Тригонометрические выражения"}
+            ]
+          },
+          {
+            "code": "equations",
+            "name": "Уравнения",
+            "children": [
+              {"code": "linear", "name": "Линейные"},
+              {
+                "code": "quadratic",
+                "name": "Квадратные",
+                "children": [
+                  {"code": "discriminant", "name": "Через дискриминант"},
+                  {"code": "vieta", "name": "По теореме Виета"},
+                  {"code": "biquadratic", "name": "Биквадратные"}
+                ]
+              },
+              {"code": "rational", "name": "Рациональные"},
+              {"code": "irrational", "name": "Иррациональные"},
+              {"code": "exponential", "name": "Показательные"},
+              {"code": "logarithmic", "name": "Логарифмические"},
+              {"code": "trigonometric", "name": "Тригонометрические"},
+              {"code": "mixed", "name": "Смешанные"},
+              {"code": "modulus", "name": "С модулем"},
+              {"code": "systems", "name": "Системы уравнений"}
+            ]
+          },
+          {
+            "code": "inequalities",
+            "name": "Неравенства",
+            "children": [
+              {"code": "linear", "name": "Линейные"},
+              {"code": "quadratic", "name": "Квадратные"},
+              {"code": "rational", "name": "Рациональные (метод интервалов)"},
+              {"code": "irrational", "name": "Иррациональные"},
+              {"code": "exponential", "name": "Показательные"},
+              {"code": "logarithmic", "name": "Логарифмические"},
+              {"code": "modulus", "name": "С модулем"},
+              {"code": "systems", "name": "Системы неравенств"}
+            ]
+          },
+          {
+            "code": "functions",
+            "name": "Функции",
+            "children": [
+              {"code": "linear", "name": "Линейная функция"},
+              {"code": "quadratic", "name": "Квадратичная функция"},
+              {"code": "rational", "name": "Дробно-рациональная"},
+              {"code": "power", "name": "Степенная"},
+              {"code": "exponential", "name": "Показательная"},
+              {"code": "logarithmic", "name": "Логарифмическая"},
+              {"code": "trigonometric", "name": "Тригонометрические"},
+              {"code": "domain_range", "name": "Область определения и значений"},
+              {"code": "graph_reading", "name": "Чтение графиков"}
+            ]
+          },
+          {
+            "code": "progressions",
+            "name": "Прогрессии",
+            "children": [
+              {"code": "arithmetic", "name": "Арифметическая"},
+              {"code": "geometric", "name": "Геометрическая"}
+            ]
+          }
+        ]
+      },
+      {
+        "code": "calculus",
+        "name": "Начала анализа",
+        "children": [
+          {
+            "code": "derivatives",
+            "name": "Производные",
+            "children": [
+              {"code": "rules", "name": "Правила дифференцирования"},
+              {"code": "geometric", "name": "Геометрический смысл"},
+              {"code": "physical", "name": "Физический смысл"},
+              {"code": "extrema", "name": "Экстремумы"},
+              {"code": "monotonicity", "name": "Монотонность"}
+            ]
+          },
+          {
+            "code": "integrals",
+            "name": "Интегралы и первообразные"
+          },
+          {
+            "code": "limits",
+            "name": "Пределы"
+          }
+        ]
+      },
+      {
+        "code": "geometry",
+        "name": "Геометрия",
+        "children": [
+          {
+            "code": "planimetry",
+            "name": "Планиметрия",
+            "children": [
+              {"code": "triangles", "name": "Треугольники"},
+              {"code": "quadrilaterals", "name": "Четырёхугольники"},
+              {"code": "circle", "name": "Окружность и круг"},
+              {"code": "polygons", "name": "Многоугольники"},
+              {"code": "similarity", "name": "Подобие"},
+              {"code": "areas", "name": "Площади"},
+              {"code": "vectors_2d", "name": "Векторы на плоскости"},
+              {"code": "coordinates_2d", "name": "Метод координат"}
+            ]
+          },
+          {
+            "code": "stereometry",
+            "name": "Стереометрия",
+            "children": [
+              {"code": "prism", "name": "Призма"},
+              {"code": "pyramid", "name": "Пирамида"},
+              {"code": "cylinder", "name": "Цилиндр"},
+              {"code": "cone", "name": "Конус"},
+              {"code": "sphere", "name": "Шар и сфера"},
+              {"code": "volumes", "name": "Объёмы"},
+              {"code": "surface_areas", "name": "Площади поверхностей"},
+              {"code": "sections", "name": "Сечения"},
+              {"code": "angles_distances", "name": "Углы и расстояния"},
+              {"code": "vectors_3d", "name": "Векторы в пространстве"},
+              {"code": "coordinates_3d", "name": "Метод координат в пространстве"}
+            ]
+          }
+        ]
+      },
+      {
+        "code": "probability",
+        "name": "Вероятность и статистика",
+        "children": [
+          {"code": "classical", "name": "Классическая вероятность"},
+          {"code": "conditional", "name": "Условная вероятность"},
+          {"code": "independent", "name": "Независимые события"},
+          {"code": "total_probability", "name": "Формула полной вероятности"},
+          {"code": "bernoulli", "name": "Формула Бернулли"}
+        ]
+      },
+      {
+        "code": "applied",
+        "name": "Прикладные задачи",
+        "children": [
+          {"code": "word_problems", "name": "Текстовые задачи"},
+          {"code": "motion", "name": "Задачи на движение"},
+          {"code": "work", "name": "Задачи на работу"},
+          {"code": "mixtures", "name": "Задачи на смеси и сплавы"},
+          {"code": "percent", "name": "Задачи на проценты"},
+          {"code": "finance", "name": "Финансовая математика, вклады, кредиты"},
+          {"code": "optimization", "name": "Оптимизация (с производной)"}
+        ]
+      },
+      {
+        "code": "parameters",
+        "name": "Задачи с параметром",
+        "children": [
+          {"code": "linear", "name": "Линейные с параметром"},
+          {"code": "quadratic", "name": "Квадратные с параметром"},
+          {"code": "graphical", "name": "Графические методы"},
+          {"code": "modulus", "name": "С модулем и параметром"}
+        ]
+      },
+      {
+        "code": "number_theory",
+        "name": "Теория чисел и логика",
+        "children": [
+          {"code": "divisibility", "name": "Делимость"},
+          {"code": "primes", "name": "Простые числа"},
+          {"code": "diophantine", "name": "Диофантовы уравнения"},
+          {"code": "number_grids", "name": "Числовые наборы"}
+        ]
+      },
+      {
+        "code": "unclassified",
+        "name": "Не классифицировано (требует ручной разметки)"
+      }
+    ]
+  },
+  "_note_for_seed_script": "Скрипт seed.ts рекурсивно обходит дерево и создаёт записи TaskTag. Путь (code/path) формируется через соединение родительских кодов точкой. depth = глубина в дереве. Не забыть создать аналогичные файлы для MATH_BASE/EGE, MATH_PROFILE/OGE, MATH_BASE/OGE (когда дойдём), PHYSICS/EGE, PHYSICS/OGE, INFORMATICS/EGE, INFORMATICS/OGE."
+}
