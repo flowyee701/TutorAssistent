@@ -8,13 +8,26 @@ import enum
 from datetime import datetime
 
 from sqlalchemy import (
-    BigInteger, Boolean, DateTime, Enum, ForeignKey, Integer,
-    String, Text, UniqueConstraint, Index, func,
-)
-from sqlalchemy.orm import (
-    DeclarativeBase, Mapped, mapped_column, relationship,
+    BigInteger,
+    Boolean,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+)
+
 # from pgvector.sqlalchemy import Vector  # подключить при добавлении эмбеддингов
 
 
@@ -97,10 +110,10 @@ class User(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    subscription: Mapped["Subscription"] = relationship(back_populates="user", uselist=False)
-    students: Mapped[list["Student"]] = relationship(back_populates="tutor")
-    homeworks: Mapped[list["Homework"]] = relationship(back_populates="tutor")
-    owned_tasks: Mapped[list["Task"]] = relationship(back_populates="owner")
+    subscription: Mapped[Subscription] = relationship(back_populates="user", uselist=False)
+    students: Mapped[list[Student]] = relationship(back_populates="tutor")
+    homeworks: Mapped[list[Homework]] = relationship(back_populates="tutor")
+    owned_tasks: Mapped[list[Task]] = relationship(back_populates="owner")
 
 
 class Subscription(Base):
@@ -119,8 +132,8 @@ class Subscription(Base):
     yukassa_payment_method_id: Mapped[str | None] = mapped_column(String(255))
     canceled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    user: Mapped["User"] = relationship(back_populates="subscription")
-    payments: Mapped[list["PaymentRecord"]] = relationship(back_populates="subscription")
+    user: Mapped[User] = relationship(back_populates="subscription")
+    payments: Mapped[list[PaymentRecord]] = relationship(back_populates="subscription")
 
     __table_args__ = (Index("ix_sub_status_end", "status", "end_date"),)
 
@@ -137,7 +150,7 @@ class PaymentRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    subscription: Mapped["Subscription"] = relationship(back_populates="payments")
+    subscription: Mapped[Subscription] = relationship(back_populates="payments")
 
 
 # =========================================
@@ -157,8 +170,8 @@ class Student(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    tutor: Mapped["User"] = relationship(back_populates="students")
-    weak_topics: Mapped[list["StudentWeakTopic"]] = relationship(back_populates="student")
+    tutor: Mapped[User] = relationship(back_populates="students")
+    weak_topics: Mapped[list[StudentWeakTopic]] = relationship(back_populates="student")
 
 
 class StudentWeakTopic(Base):
@@ -170,8 +183,8 @@ class StudentWeakTopic(Base):
     severity: Mapped[int] = mapped_column(Integer, default=2)  # 1-3
     notes: Mapped[str | None] = mapped_column(Text)
 
-    student: Mapped["Student"] = relationship(back_populates="weak_topics")
-    tag: Mapped["TaskTag"] = relationship()
+    student: Mapped[Student] = relationship(back_populates="weak_topics")
+    tag: Mapped[TaskTag] = relationship()
 
     __table_args__ = (UniqueConstraint("student_id", "tag_id"),)
 
@@ -194,7 +207,7 @@ class TaskTag(Base):
     depth: Mapped[int] = mapped_column(Integer, default=0)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
-    children: Mapped[list["TaskTag"]] = relationship()
+    children: Mapped[list[TaskTag]] = relationship()
 
     __table_args__ = (Index("ix_tag_subject_exam", "subject", "exam_type"),)
 
@@ -232,8 +245,8 @@ class Task(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    owner: Mapped["User"] = relationship(back_populates="owned_tasks")
-    tag_links: Mapped[list["TaskTagLink"]] = relationship(back_populates="task")
+    owner: Mapped[User] = relationship(back_populates="owned_tasks")
+    tag_links: Mapped[list[TaskTagLink]] = relationship(back_populates="task")
 
     __table_args__ = (
         Index("ix_task_subject_exam", "subject", "exam_type"),
@@ -250,8 +263,8 @@ class TaskTagLink(Base):
     task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), index=True)
     tag_id: Mapped[int] = mapped_column(ForeignKey("task_tags.id"), index=True)
 
-    task: Mapped["Task"] = relationship(back_populates="tag_links")
-    tag: Mapped["TaskTag"] = relationship()
+    task: Mapped[Task] = relationship(back_populates="tag_links")
+    tag: Mapped[TaskTag] = relationship()
 
     __table_args__ = (UniqueConstraint("task_id", "tag_id"),)
 
@@ -274,8 +287,8 @@ class Homework(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    tutor: Mapped["User"] = relationship(back_populates="homeworks")
-    tasks: Mapped[list["HomeworkTask"]] = relationship(back_populates="homework", order_by="HomeworkTask.order")
+    tutor: Mapped[User] = relationship(back_populates="homeworks")
+    tasks: Mapped[list[HomeworkTask]] = relationship(back_populates="homework", order_by="HomeworkTask.order")
 
 
 class HomeworkTask(Base):
@@ -286,8 +299,8 @@ class HomeworkTask(Base):
     task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"))
     order: Mapped[int] = mapped_column(Integer)
 
-    homework: Mapped["Homework"] = relationship(back_populates="tasks")
-    task: Mapped["Task"] = relationship()
+    homework: Mapped[Homework] = relationship(back_populates="tasks")
+    task: Mapped[Task] = relationship()
 
     __table_args__ = (UniqueConstraint("homework_id", "order"),)
 
@@ -307,7 +320,7 @@ class Lesson(Base):
     notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    topics: Mapped[list["LessonTopic"]] = relationship(back_populates="lesson")
+    topics: Mapped[list[LessonTopic]] = relationship(back_populates="lesson")
 
 
 class LessonTopic(Base):
@@ -319,8 +332,8 @@ class LessonTopic(Base):
     needs_review: Mapped[bool] = mapped_column(Boolean, default=False)
     notes: Mapped[str | None] = mapped_column(Text)
 
-    lesson: Mapped["Lesson"] = relationship(back_populates="topics")
-    tag: Mapped["TaskTag"] = relationship()
+    lesson: Mapped[Lesson] = relationship(back_populates="topics")
+    tag: Mapped[TaskTag] = relationship()
 
     __table_args__ = (UniqueConstraint("lesson_id", "tag_id"),)
 

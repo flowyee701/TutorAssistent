@@ -106,7 +106,7 @@ async def _walk(
 
 
 async def seed_from_file(session: AsyncSession, file_path: Path) -> None:
-    raw = json.loads(file_path.read_text(encoding="utf-8"))
+    raw = json.loads(file_path.read_text(encoding="utf-8"))  # noqa: ASYNC240 — разовый CLI-сидинг
     subject = Subject(raw["subject"])
     exam_type = ExamType(raw["examType"])
     tree = raw["tree"]

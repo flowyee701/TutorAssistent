@@ -25,6 +25,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Тяжёлый OCR-стек (torch) — ставится отдельно: pip install -e ".[parser]"
+parser = [
+    "pix2tex>=0.1.2",
+    "pillow>=10.4",
+]
 dev = [
     "ruff>=0.7",
     "black>=24.10",
@@ -46,7 +51,8 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC", "SIM"]
-ignore = ["E501"]
+# UP042: модели — копия эталонного models.py (str+Enum для совместимости), не трогаем.
+ignore = ["E501", "UP042"]
 
 [tool.black]
 line-length = 100

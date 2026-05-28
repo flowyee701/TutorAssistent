@@ -32,6 +32,17 @@ services:
       timeout: 5s
       retries: 10
 
+  # Веб-админка БД для ручной верификации задач (Спринт 2).
+  # http://localhost:8081 — System: PostgreSQL, Server: postgres, БД/логин из .env
+  adminer:
+    image: adminer:4
+    container_name: tutor_ai_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
   redis_data:
